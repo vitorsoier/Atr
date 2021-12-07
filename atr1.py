@@ -49,44 +49,6 @@ def acertou(t1, t2):
     else:
         return False
 
-# detectar o game over
-
-
-'''def game_over():
-    gameOver = turtle.Turtle()
-    gameOver.color('#FF3333')
-    gameOver.up()
-    gameOver.hideturtle()
-    nave.hideturtle()
-    tiro.hideturtle()
-    down_line.hideturtle()
-    for invader in invaders:
-        invader.hideturtle()
-    gameOver.write("Game over", move=True, align='center',
-                   font=('Arial', 40, 'normal'))
-    pontos_pen.setposition(0, -30)
-    pontos_pen.write('Score Final: %s' % pontos, align='center',
-                     font=('Arial', 18, 'normal'))
-'''
-# detectar vitória
-
-
-'''def win():
-    vitoria = turtle.Turtle()
-    vitoria.color('#52FF6A')
-    vitoria.up()
-    vitoria.hideturtle()
-    nave.hideturtle()
-    tiro.hideturtle()
-    down_line.hideturtle()
-    for invader in invaders:
-        invader.hideturtle()
-    vitoria.write("Você venceu!", move=True, align='center',
-                  font=('Arial', 40, 'normal'))
-    pontos_pen.setposition(0, -30)
-    pontos_pen.write('Score Final: %s' % pontos, align='center',
-                     font=('Arial', 18, 'normal'))
-'''
 
 # definindo o tamanho da janela
 janela = turtle.Screen()
