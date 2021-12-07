@@ -3,8 +3,9 @@ import turtle
 import threading
 import time
 
-
+statusTiro = 0
 player_dx = 15
+libera_tiro = threading.Semaphore()
 # mover para esquerda
 
 
@@ -23,16 +24,23 @@ def direita():
         x = 200
     nave.setx(x)
 
+# definindo status do tiro:
+
+
+def status_tiro():
+    global statusTiro
+    statusTiro = 1
+    return (statusTiro)
+
+
 # tiros que a nave vai disparar
-
-
 def tiros_nave():
     x = nave.xcor()
     y = nave.ycor()
     tiro.setposition(x, y+30)
     tiro.showturtle()
 
-# detectar colisão entre tiros e personagens
+ # detectar colisão entre tiros e personagens
 
 
 def acertou(t1, t2):
@@ -41,10 +49,27 @@ def acertou(t1, t2):
     else:
         return False
 
-# detectar se os invader chegaram até o fim da tela de jogo
+# detectar o game over
 
 
-        # definindo o tamanho da janela
+def game_over():
+    gameOver = turtle.Turtle()
+    gameOver.color('#FF3333')
+    gameOver.up()
+    gameOver.hideturtle()
+    nave.hideturtle()
+    tiro.hideturtle()
+    down_line.hideturtle()
+    for invader in invaders:
+        invader.hideturtle()
+    gameOver.write("Game over", move=True, align='center',
+                   font=('Arial', 40, 'normal'))
+    pontos_pen.setposition(0, -30)
+    pontos_pen.write('Score Final: %s' % pontos, align='center',
+                     font=('Arial', 18, 'normal'))
+
+
+# definindo o tamanho da janela
 janela = turtle.Screen()
 janela.setup(height=560, width=560)
 janela.bgcolor('#000124')
@@ -101,10 +126,11 @@ for i in range(5):
     # Create the enemy
     invaders.append(turtle.Turtle())
 
+
 count = 0
 for invader in invaders:
     invader.color("red")
-    invader.shape("circle")
+    invader.shape('imagens/invaders1.gif')
     invader.penup()
     invader.speed(0)
     if count == 0:
@@ -115,27 +141,39 @@ for invader in invaders:
     invader.setposition(x, y)
     count += 1
 
-velocidade_invader = 5
+velocidade_invader = 2
 
 
 def trajetoria_tiros():
     global pontos
+    global statusTiro
     while True:
-        tiro.forward(velocidade_tiro)
-
         # esperando os inputs acionarem as funcoes, utilizarei para criar a thread de movimentação
         turtle.listen()
         turtle.onkey(direita, 'Right')
         turtle.onkey(esquerda, 'Left')
-        turtle.onkey(tiros_nave, 'space')
-
-        for invader in invaders:
-            if acertou(tiro, invader):
-                tiro.hideturtle()
-                invader.hideturtle()
-                pontos += 50
-                pontos_pen.clear()
-                pontos_pen.write('Score: %s' % pontos)
+        turtle.onkey(status_tiro, 'space')
+        if statusTiro == 1:
+            libera_tiro.acquire()
+            statusTiro = 0
+            tiros_nave()
+            while True:
+                tiro.forward(velocidade_tiro)
+                for invader in invaders:
+                    if acertou(tiro, invader) and invader.isvisible():
+                        tiro.hideturtle()
+                        invader.hideturtle()
+                        pontos += 50
+                        pontos_pen.clear()
+                        pontos_pen.write('Score: %s' % pontos)
+                        libera_tiro.release()
+                        statusTiro = 0
+                        break
+                if tiro.ycor() > 220:
+                    tiro.hideturtle()
+                    libera_tiro.release()
+                    statusTiro = 0
+                    break
 
 
 def invaders_move():
@@ -145,13 +183,15 @@ def invaders_move():
             localizacao_x = invader.xcor()
             localizacao_x += velocidade_invader
             invader.setx(localizacao_x)
-
             if (invader.xcor() > 220 or invader.xcor() < -220) and invader.isvisible():
                 for inv in invaders:
                     y = inv.ycor()
                     y -= 10
                     inv.sety(y)
                 velocidade_invader *= -1
+            if invader.ycor() < 200 and invader.isvisible():
+                game_over()
+                break
 
 
 thread1 = threading.Thread(target=trajetoria_tiros)
