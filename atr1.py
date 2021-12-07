@@ -68,6 +68,25 @@ def game_over():
     pontos_pen.write('Score Final: %s' % pontos, align='center',
                      font=('Arial', 18, 'normal'))
 
+# detectar vitória
+
+
+def win():
+    vitoria = turtle.Turtle()
+    vitoria.color('#52FF6A')
+    vitoria.up()
+    vitoria.hideturtle()
+    nave.hideturtle()
+    tiro.hideturtle()
+    down_line.hideturtle()
+    for invader in invaders:
+        invader.hideturtle()
+    vitoria.write("Você venceu!", move=True, align='center',
+                  font=('Arial', 40, 'normal'))
+    pontos_pen.setposition(0, -30)
+    pontos_pen.write('Score Final: %s' % pontos, align='center',
+                     font=('Arial', 18, 'normal'))
+
 
 # definindo o tamanho da janela
 janela = turtle.Screen()
@@ -189,9 +208,11 @@ def invaders_move():
                     y -= 10
                     inv.sety(y)
                 velocidade_invader *= -1
-            if invader.ycor() < 200 and invader.isvisible():
+            if invader.ycor() < -120 and invader.isvisible():
                 game_over()
                 break
+            if pontos == 250:
+                win()
 
 
 thread1 = threading.Thread(target=trajetoria_tiros)
