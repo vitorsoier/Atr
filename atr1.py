@@ -52,7 +52,7 @@ def acertou(t1, t2):
 # detectar o game over
 
 
-def game_over():
+'''def game_over():
     gameOver = turtle.Turtle()
     gameOver.color('#FF3333')
     gameOver.up()
@@ -67,11 +67,11 @@ def game_over():
     pontos_pen.setposition(0, -30)
     pontos_pen.write('Score Final: %s' % pontos, align='center',
                      font=('Arial', 18, 'normal'))
-
+'''
 # detectar vitória
 
 
-def win():
+'''def win():
     vitoria = turtle.Turtle()
     vitoria.color('#52FF6A')
     vitoria.up()
@@ -86,7 +86,7 @@ def win():
     pontos_pen.setposition(0, -30)
     pontos_pen.write('Score Final: %s' % pontos, align='center',
                      font=('Arial', 18, 'normal'))
-
+'''
 
 # definindo o tamanho da janela
 janela = turtle.Screen()
@@ -167,7 +167,7 @@ def trajetoria_tiros():
     global pontos
     global statusTiro
     while True:
-        # esperando os inputs acionarem as funcoes, utilizarei para criar a thread de movimentação
+        # Função feita pra limitar a quantidade de tirosm contar pontos e ocultar tiro assim que passar da tela ou atingir um inimigo
         turtle.listen()
         turtle.onkey(direita, 'Right')
         turtle.onkey(esquerda, 'Left')
@@ -194,6 +194,8 @@ def trajetoria_tiros():
                     statusTiro = 0
                     break
 
+# função para movimentar os invaders e chamar a função atualiza a tela
+
 
 def invaders_move():
     global velocidade_invader
@@ -209,10 +211,49 @@ def invaders_move():
                     inv.sety(y)
                 velocidade_invader *= -1
             if invader.ycor() < -120 and invader.isvisible():
-                game_over()
+                tela(invader)
                 break
             if pontos == 250:
-                win()
+                tela(invader)
+                break
+
+# Mostra quando jogador perde ou ganha, atualiza a tela
+
+
+def tela(invader):
+    while True:
+        if invader.ycor() < -120 and invader.isvisible():
+            gameOver = turtle.Turtle()
+            gameOver.color('#FF3333')
+            gameOver.up()
+            gameOver.hideturtle()
+            nave.hideturtle()
+            tiro.hideturtle()
+            down_line.hideturtle()
+            for invader in invaders:
+                invader.hideturtle()
+            gameOver.write("Game over", move=True, align='center',
+                           font=('Arial', 40, 'normal'))
+            pontos_pen.setposition(0, -30)
+            pontos_pen.write('Score Final: %s' % pontos, align='center',
+                             font=('Arial', 18, 'normal'))
+            break
+        if pontos == 250:
+            vitoria = turtle.Turtle()
+            vitoria.color('#52FF6A')
+            vitoria.up()
+            vitoria.hideturtle()
+            nave.hideturtle()
+            tiro.hideturtle()
+            down_line.hideturtle()
+            for invader in invaders:
+                invader.hideturtle()
+            vitoria.write("Você venceu!", move=True, align='center',
+                          font=('Arial', 40, 'normal'))
+            pontos_pen.setposition(0, -30)
+            pontos_pen.write('Score Final: %s' % pontos, align='center',
+                             font=('Arial', 18, 'normal'))
+            break
 
 
 thread1 = threading.Thread(target=trajetoria_tiros)
@@ -220,6 +261,9 @@ thread1.start()
 
 thread2 = threading.Thread(target=invaders_move)
 thread2.start()
+
+thread3 = threading.Thread(target=tela)
+thread3.start()
 
 
 janela.mainloop()
