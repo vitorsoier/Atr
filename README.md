@@ -2,6 +2,7 @@
 Projeto de Atr, tem como objetivo recriar o jogo Space invaders utilizando conhecimentos de Thread.
 
 Pra jogar:
+
 -Compilar o programa em qualquer IDE
 
 -Setas para direita e esquerda movimentão a nava
