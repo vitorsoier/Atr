@@ -3,7 +3,9 @@ Projeto de Atr, tem como objetivo recriar o jogo Space invaders utilizando conhe
 
 Pra jogar:
 -Compilar o programa em qualquer IDE
+
 -Setas para direita e esquerda movimentão a nava
+
 -Barra de espaço realiza disparos
 
 O jogo se finaliza quando a nave acerta todos os 5 invaders ou quando algum invader acerta a nave. 
