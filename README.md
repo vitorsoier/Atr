@@ -5,7 +5,7 @@ Pra jogar:
 
 -Compilar o programa em qualquer IDE
 
--Setas para direita e esquerda movimentão a nava
+-Setas para direita e esquerda movimentam a nave
 
 -Barra de espaço realiza disparos
 
