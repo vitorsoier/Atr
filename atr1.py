@@ -1,11 +1,15 @@
 # Import modules
 import turtle
 import threading
-import time
+import random
+import math
 
 statusTiro = 0
+status = 0
+invaders_tiros = 5
 player_dx = 15
 libera_tiro = threading.Semaphore()
+invaders_tiro = threading.Semaphore(invaders_tiros)
 # mover para esquerda
 
 
@@ -48,6 +52,13 @@ def acertou(t1, t2):
         return True
     else:
         return False
+
+def acertou_nave(t1, t2):
+    if math.sqrt(math.pow(t1.xcor() - t2.xcor(), 2) + math.pow(t1.ycor() - t2.ycor(), 2)) <= 15:
+        return True
+    else:
+        return False
+
 
 
 # definindo o tamanho da janela
@@ -107,6 +118,18 @@ for i in range(5):
     # Create the enemy
     invaders.append(turtle.Turtle())
 
+#criando vetor dos tiros do invasor:
+tiros_inv = []
+for i in range(invaders_tiros):
+    tiros_inv.append(turtle.Turtle())
+for tiro_inv in tiros_inv:
+    tiro_inv.hideturtle()
+    tiro_inv.shape("circle")
+    tiro_inv.color("red")
+    tiro_inv.shapesize(0.5, 0.5)
+    tiro_inv.speed(0)
+    tiro_inv.up()
+    tiro_inv.setheading(270)
 
 count = 0
 for invader in invaders:
@@ -161,6 +184,8 @@ def trajetoria_tiros():
 
 def invaders_move():
     global velocidade_invader
+    global invaders_tiros
+    global status
     while True:
         for invader in invaders:
             localizacao_x = invader.xcor()
@@ -178,19 +203,48 @@ def invaders_move():
             if pontos == 250:
                 tela(invader)
                 break
+            #sortear disparo de invasor acontece ou não
+            disparo = random.randint(0,100)
+            if (disparo%11) == 0:
+                if invaders_tiros > 0 and invader.isvisible() and not tiros_inv[invaders_tiros-1].isvisible():
+                    invaders_tiro.acquire()
+                    x, y = invader.xcor(), invader.ycor() - 10
+                    tiros_inv[invaders_tiros - 1].setpos(x, y)
+                    tiros_inv[invaders_tiros - 1].showturtle()
+                    invaders_tiros -= 1
+                        # Movimentando tiros_inv inimigos e verificando colisão com o jogador ou saida da tela de jogo
+            for n in range(len(tiros_inv)):
+                if tiros_inv[n].isvisible():
+                    tiros_inv[n].forward(15)
+                    if tiros_inv[n].ycor() <= -210:
+                        invaders_tiros += 1
+                        tiros_inv[n].hideturtle()
+                        invaders_tiro.release()
+                    elif acertou_nave(tiros_inv[n], down_line):
+                        tiros_inv[n].hideturtle()
+                        down_line.hideturtle()
+                        invaders_tiro.release()
+                        invaders_tiros += 1
+                        status = 1
+                        break
+        if status == 1:
+            tela(invader)
+            break    
+
+
 
 # Mostra quando jogador perde ou ganha, atualiza a tela
-
-
 def tela(invader):
+    global status
     while True:
-        if invader.ycor() < -120 and invader.isvisible():
+        if (invader.ycor() < -120 and invader.isvisible()) or status == 1:
             gameOver = turtle.Turtle()
             gameOver.color('#FF3333')
             gameOver.up()
             gameOver.hideturtle()
             nave.hideturtle()
             tiro.hideturtle()
+            tiros_inv.clear()
             down_line.hideturtle()
             for invader in invaders:
                 invader.hideturtle()
